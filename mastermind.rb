@@ -15,6 +15,28 @@ def generate_key
   return array
 end
 
+def get_guess 
+  puts "Guess what the key is by giving four numbers 1 - 6!"
+  guess = gets.chomp.split("")
+  if guess.length != 4
+    puts "FOUR NUMBERS BETWEEN 1-6!"
+    get_guess()
+  end
+  return guess
+end
+
+def show_correct (current_guess, secret_key)
+  correct_count = 0
+  temp_key = secret_key
+  for i in 0..3
+    if current_guess[i] == secret_key[i]
+      temp_key[i] = "F"
+      correct_count += 1
+    end
+  end; hint_count = show_hints(current_guess, temp_key)
+  return correct_count, hint_count
+end
+
 def show_hints (current_guess, temp_key)
   hint_count = 0 
   for i in 0..3
@@ -28,34 +50,27 @@ def show_hints (current_guess, temp_key)
   return hint_count
 end
 
-def show_correct (current_guess, secret_key)
-  correct_count = 0
-  temp_key = secret_key
-  for i in 0..3
-    if current_guess[i] == secret_key[i]
-      temp_key[i] = "F"
-      correct_count += 1
-    end
+def make_hint_array (correct_hint)
+  hint_array = []
+  correct_hint[0].to_i.times {hint_array.unshift("B")}
+  correct_hint[1].to_i.times {hint_array.unshift("W")}
+  while hint_array.length < 4
+    hint_array.push("*")
   end
-  return correct_count, temp_key
-end
-
-def make_hint_array (correct_pegs, hint_pegs)
-  hint_array = ["*","*","*","*"]
-  correct_pegs.to_i.times {hint_array.unshift("B")}
-  hint_pegs.to_i.times {hint_array.unshift("W")}
   return hint_array
 end 
 
-def get_guess 
-  puts "Guess what the key is by giving four numbers 1 - 6!"
-  guess = gets.chomp
-  if guess.length != 4
-    puts "FOUR NUMBERS BETWEEN 1-6!"
-    get_guess()
-  end
-  guess.split("")
-  return guess
+def make_round_array (hint_array, current_guess)
+  arr = hint_array + current_guess
+  return arr
+end
+
+def round_data (secret_key)
+  current_guess = get_guess()
+  correct_hint = show_correct(current_guess, secret_key)
+  hint_array = make_hint_array(correct_hint)
+  round_array = make_round_array(hint_array, current_guess)
+  return round_array
 end
 
 def print_row (hint_array, current_guess)
@@ -64,18 +79,18 @@ def print_row (hint_array, current_guess)
   puts " "*5 + "#{hint_array[0]} #{hint_array[1]} #{hint_array[2]} #{hint_array[3]}" + " "*7 + "#{current_guess[0]} #{current_guess[1]} #{current_guess[2]} #{current_guess[3]}"
 end
 
-#new game
 secret_key = generate_key()
-#loop
-current_guess = get_guess()
+array = round_data(secret_key)
+print array
+# current_guess = get_guess()
+# correct_hint = show_correct(current_guess, secret_key)
+# # temp_key = temp_correct.pop; 
+# # correct_pegs = temp_correct.join("")
+# # hint_pegs = show_hints(temp_correct)
+# hint_array = make_hint_array(correct_hint)
+# round_array = make_round_array(hint_array, current_guess)
+# # print_row(hint_array, current_guess)
 
-temp_correct = show_correct(current_guess, secret_key)
-temp_key = temp_correct.pop; 
 
-correct_pegs = temp_correct.join("")
-hint_pegs = show_hints(current_guess, temp_key)
-hint_array = make_hint_array(correct_pegs, hint_pegs)
-
-print_row(hint_array, current_guess)
-
+# [[1,2,3,4,5,6,7,8]]
 
