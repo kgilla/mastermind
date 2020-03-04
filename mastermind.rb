@@ -74,25 +74,28 @@ class PlayerGuess
     return single_round
   end
 
-  def check_winner(single_round)
+  def check_winner(single_round, new_game)
     hint_count = 0
     single_round.each do |hint|
       if hint == "B"
         hint_count += 1
         if hint_count == 4
           win = true
-          game_over(win)
+          game_over(win, new_game)
         end
       end
     end
   end
 
-  def game_over (win = false)
+  def game_over (win = false, new_game)
+    secret_key = new_game.secret_key.join("|")
     if win == true
       puts "\nCongratulations! You are a true Mastermind!"
+      puts "\nYou successfully guessed the code was: #{secret_key}!"
       play_again()
     else
-      puts "\nLooks like you lost..... Bummer."
+      puts "\nLooks like you lost..... Bummer :("
+      puts "\nThe secret code was: #{secret_key}"
       play_again()
     end
   end
@@ -141,12 +144,16 @@ def print_row (arr)
   round = 0
   arr.each do |arr|
     round += 1
-  puts "Round: #{round} =>" + " "*2 + "#{arr[0]} | #{arr[1]} | #{arr[2]} | #{arr[3]}" + " "*5 + "#{arr[4]} | #{arr[5]} | #{arr[6]} | #{arr[7]}"
+    if round == 10
+      puts "Round ##{round} =>" + " "*1 + "#{arr[0]} | #{arr[1]} | #{arr[2]} | #{arr[3]}" + " "*5 + "#{arr[4]} | #{arr[5]} | #{arr[6]} | #{arr[7]}"
+      break
+    end
+    puts "Round ##{round} =>" + " "*2 + "#{arr[0]} | #{arr[1]} | #{arr[2]} | #{arr[3]}" + " "*5 + "#{arr[4]} | #{arr[5]} | #{arr[6]} | #{arr[7]}"
   end
 end
 
 def play_again
-  puts "Want to play again? (Y/N)"
+  puts "\nWant to play again? (Y/N)"
   answer = gets.chomp.upcase
   if answer.length != 1
     play_again()
@@ -166,13 +173,13 @@ def player_guess_ng
     single_round = new_game.round_data(new_game)
     new_game.rounds_total.push(single_round)
     print_row(new_game.rounds_total)
-    new_game.check_winner(single_round)
+    new_game.check_winner(single_round, new_game)
     if new_game.round_count == 9
-      new_game.game_over()
+      new_game.game_over(new_game)
     end
     new_game.round_count += 1
   end
 end
 
-
 intro()
+
